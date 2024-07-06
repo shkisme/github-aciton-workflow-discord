@@ -8,10 +8,34 @@ permissions:
 jobs:
   notify:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Notify Discord
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run some action
         run: |
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"GitHub Action CICD Completed 🎉\n[확인하기](\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\")\"}" 
-          ${{ secrets.DISCORD_WEBHOOK_URL }}
+          echo "Running some actions"
+          # 여기서 실제로 실행할 작업을 추가합니다.
+
+      - name: Set status output
+        id: set-status
+        run: echo "status=success" >> $GITHUB_ENV
+
+      - name: Set status to failure on error
+        if: failure()
+        run: echo "status=failure" >> $GITHUB_ENV
+
+      - name: Notify Discord on success
+        if: env.status == 'success'
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \":white_check_mark: *${{ github.ref_name }}* 배포가 성공했습니다.\n[깃허브액션에서 확인하기.](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Notify Discord on failure
+        if: env.status == 'failure'
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \":x: *${{ github.ref_name }}* 배포가 실패했습니다.\n[깃허브액션에서 확인하기.](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
