@@ -1,0 +1,16 @@
+name: Deploy Dev to Amazon ECS
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"GitHub Action CICD Completed 🎉\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
