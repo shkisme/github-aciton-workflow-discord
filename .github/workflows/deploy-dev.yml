@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Notify Discord
         run: |
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"GitHub Action CICD Completed 🎉\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"GitHub Action CICD Completed 🎉\n[확인하기](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}" 
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
